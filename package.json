@@ -1,0 +1,12 @@
+{
+  "name": "hulya-search-engine",
+  "version": "1.0.0",
+  "description": "Hulya - Modern search engine with green & black theme. Built with HTML, CSS, JS + Bun backend.",
+  "scripts": {
+    "dev": "bun --hot server.js",
+    "start": "bun server.js"
+  },
+  "dependencies": {
+    "z-ai-web-dev-sdk": "^0.0.17"
+  }
+}
