@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hulya - Search the Web Beautifully</title>
+  <link rel="icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface-hover: #151515;
+      --surface-input: #111111;
+      --emerald-300: #6ee7b7;
+      --emerald-400: #34d399;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --emerald-700: #047857;
+      --white: #ffffff;
+      --white-90: rgba(255,255,255,0.9);
+      --white-70: rgba(255,255,255,0.7);
+      --white-60: rgba(255,255,255,0.6);
+      --white-50: rgba(255,255,255,0.5);
+      --white-40: rgba(255,255,255,0.4);
+      --white-30: rgba(255,255,255,0.3);
+      --white-25: rgba(255,255,255,0.25);
+      --white-20: rgba(255,255,255,0.2);
+      --white-15: rgba(255,255,255,0.15);
+      --white-10: rgba(255,255,255,0.1);
+      --white-6: rgba(255,255,255,0.06);
+      --white-4: rgba(255,255,255,0.04);
+      --white-3: rgba(255,255,255,0.03);
+      --white-1: rgba(255,255,255,0.01);
+      --emerald-500-30: rgba(16,185,129,0.3);
+      --emerald-500-20: rgba(16,185,129,0.2);
+      --emerald-500-10: rgba(16,185,129,0.1);
+      --emerald-500-5: rgba(16,185,129,0.05);
+      --emerald-500-3: rgba(16,185,129,0.03);
+      --emerald-400-60: rgba(52,211,153,0.6);
+      --emerald-400-70: rgba(52,211,153,0.7);
+      --emerald-400-30: rgba(52,211,153,0.3);
+      --red-400: #f87171;
+      --red-500-10: rgba(239,68,68,0.1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--white-10); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--white-20); }
+
+    /* ===== BACKGROUND DECORATION ===== */
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-glow .orb-1 {
+      position: absolute;
+      top: 0;
+      left: 25%;
+      width: 600px;
+      height: 600px;
+      background: var(--emerald-500-5);
+      border-radius: 50%;
+      filter: blur(150px);
+    }
+    .bg-glow .orb-2 {
+      position: absolute;
+      bottom: 0;
+      right: 25%;
+      width: 500px;
+      height: 500px;
+      background: var(--emerald-500-5);
+      border-radius: 50%;
+      filter: blur(120px);
+    }
+    .bg-glow .orb-3 {
+      position: absolute;
+      top: 80px;
+      right: 33%;
+      width: 300px;
+      height: 300px;
+      background: var(--emerald-500-3);
+      border-radius: 50%;
+      filter: blur(100px);
+      display: none;
+    }
+
+    /* ===== HOMEPAGE ===== */
+    .homepage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+      position: relative;
+      z-index: 10;
+      margin-top: -4rem;
+      transition: opacity 0.3s ease;
+    }
+    .homepage.hidden { display: none; }
+
+    /* Logo */
+    .logo-container { margin-bottom: 2rem; text-align: center; }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .logo-icon {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 1.5rem;
+      background: linear-gradient(135deg, var(--emerald-400), var(--emerald-500), var(--emerald-700));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 25px 50px -12px var(--emerald-500-30);
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .logo-glow {
+      position: absolute;
+      inset: 0;
+      background: var(--emerald-400-30);
+      border-radius: 1.5rem;
+      filter: blur(2rem);
+      transform: scale(1.5);
+      z-index: -1;
+    }
+    .logo-icon svg { width: 40px; height: 40px; color: white; }
+
+    .logo-title {
+      font-size: 4.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(to right, var(--emerald-300), var(--emerald-400), var(--emerald-600));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .logo-subtitle {
+      color: var(--white-40);
+      margin-top: 0.75rem;
+      font-size: 1.125rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    @media (min-width: 640px) {
+      .logo-icon { width: 96px; height: 96px; border-radius: 1.5rem; }
+      .logo-icon svg { width: 48px; height: 48px; }
+      .logo-title { font-size: 5.5rem; }
+      .logo-subtitle { font-size: 1.25rem; }
+    }
+
+    /* ===== SEARCH BAR ===== */
+    .search-container {
+      width: 100%;
+      max-width: 672px;
+      position: relative;
+    }
+    .search-wrapper {
+      position: relative;
+    }
+    .search-glow {
+      position: absolute;
+      inset: -4px;
+      border-radius: 1rem;
+      background: linear-gradient(to right, var(--emerald-500-30), var(--emerald-500-20), var(--emerald-500-30));
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      filter: blur(12px);
+      pointer-events: none;
+    }
+    .search-wrapper:focus-within .search-glow { opacity: 1; }
+
+    .search-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: var(--surface-input);
+      border: 1px solid var(--white-10);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    .search-wrapper:focus-within .search-bar {
+      border-color: var(--emerald-500-30);
+    }
+    .search-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--emerald-400-70);
+      margin-left: 1.25rem;
+      flex-shrink: 0;
+    }
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 1.25rem 1rem;
+      font-size: 1.125rem;
+      color: white;
+      font-family: inherit;
+    }
+    .search-input::placeholder { color: var(--white-25); }
+    .search-clear {
+      padding: 0.625rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--white-40);
+      border-radius: 0.75rem;
+      transition: background 0.2s;
+      display: none;
+      margin-right: 0.25rem;
+    }
+    .search-clear:hover { background: var(--white-5); }
+    .search-clear.visible { display: block; }
+    .search-clear svg { width: 20px; height: 20px; }
+    .search-submit {
+      padding: 0.875rem 1.5rem;
+      background: var(--emerald-500);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-right: 0.375rem;
+      border-radius: 0.75rem;
+    }
+    .search-submit:hover { background: var(--emerald-400); }
+    .search-submit svg { width: 20px; height: 20px; color: black; }
+
+    /* Compact search bar (header) */
+    .search-bar-compact {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #141414;
+      border: 1px solid var(--white-10);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+    .search-bar-compact:focus-within { border-color: var(--emerald-500-30); }
+    .search-bar-compact .search-icon { width: 16px; height: 16px; margin-left: 1rem; }
+    .search-bar-compact .search-input { padding: 0.625rem 0.75rem; font-size: 0.875rem; }
+    .search-bar-compact .search-clear { padding: 0.5rem; }
+    .search-bar-compact .search-clear svg { width: 14px; height: 14px; }
+    .search-bar-compact .search-submit {
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: black;
+      border-radius: 0;
+    }
+    .search-bar-compact .search-submit:hover { background: var(--emerald-400); }
+
+    /* ===== SUGGESTIONS ===== */
+    .suggestions {
+      position: absolute;
+      margin-top: 0.5rem;
+      width: 100%;
+      background: #141414;
+      border: 1px solid var(--white-10);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      z-index: 50;
+      display: none;
+    }
+    .suggestions.visible { display: block; }
+    .suggestion-item {
+      width: 100%;
+      padding: 0.75rem 1.25rem;
+      text-align: left;
+      font-size: 0.875rem;
+      color: var(--white-70);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .suggestion-item:hover {
+      background: var(--emerald-500-10);
+      color: var(--emerald-300);
+    }
+    .suggestion-item svg { width: 14px; height: 14px; color: var(--white-30); flex-shrink: 0; }
+
+    /* ===== QUICK SEARCH CHIPS ===== */
+    .quick-searches {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      background: var(--white-3);
+      border: 1px solid var(--white-6);
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      color: var(--white-50);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+    .chip:hover {
+      color: var(--emerald-300);
+      border-color: var(--emerald-500-30);
+      background: var(--emerald-500-5);
+    }
+    .chip svg { width: 14px; height: 14px; }
+
+    /* ===== FEATURES ===== */
+    .features {
+      margin-top: 4rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem 3rem;
+      font-size: 0.75rem;
+      color: var(--white-20);
+    }
+    .feature { display: flex; align-items: center; gap: 0.5rem; }
+    .feature svg { width: 16px; height: 16px; color: var(--emerald-500-30); }
+
+    /* ===== HEADER (Results Page) ===== */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(10,10,10,0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--white-5);
+      display: none;
+    }
+    .header.visible { display: block; }
+    .header-inner {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) { .header-inner { padding: 0.75rem 1.5rem; } }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      transition: box-shadow 0.3s;
+    }
+    .header-logo:hover .logo-box { box-shadow: 0 10px 25px -5px var(--emerald-500-30); }
+    .logo-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, var(--emerald-400), var(--emerald-600));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 15px -3px var(--emerald-500-20);
+      transition: box-shadow 0.3s;
+    }
+    .logo-box svg { width: 20px; height: 20px; color: white; }
+    .header-logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--emerald-300), var(--emerald-500));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: none;
+    }
+    @media (min-width: 640px) { .header-logo-text { display: block; } }
+
+    .header-search { flex: 1; max-width: 672px; position: relative; }
+
+    .header-features {
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--white-30);
+    }
+    @media (min-width: 1024px) { .header-features { display: flex; } }
+    .header-feature { display: flex; align-items: center; gap: 0.25rem; }
+    .header-feature svg { width: 12px; height: 12px; }
+
+    /* ===== RESULTS PAGE ===== */
+    .results-page {
+      max-width: 896px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+      position: relative;
+      z-index: 10;
+      display: none;
+    }
+    .results-page.visible { display: block; }
+    @media (min-width: 640px) { .results-page { padding: 1.5rem; } }
+
+    .results-meta {
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--white-30);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .results-meta .dot { color: var(--white-10); }
+    .results-meta svg { width: 12px; height: 12px; }
+
+    /* Result Card */
+    .result-card {
+      display: block;
+      background: rgba(17,17,17,0.6);
+      border: 1px solid var(--white-4);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.4s ease forwards;
+      opacity: 0;
+    }
+    @media (min-width: 640px) { .result-card { padding: 1.5rem; } }
+    .result-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--emerald-500-20);
+      box-shadow: 0 10px 15px -3px var(--emerald-500-5);
+    }
+    .result-inner { display: flex; align-items: flex-start; gap: 1rem; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Favicon */
+    .favicon-box {
+      flex-shrink: 0;
+      margin-top: 0.25rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 0.75rem;
+      background: var(--white-5);
+      border: 1px solid var(--white-10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .result-card:hover .favicon-box { border-color: var(--emerald-500-30); }
+    .favicon-box img { width: 20px; height: 20px; }
+    .favicon-box .fallback {
+      color: var(--emerald-400);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .favicon-box svg { width: 16px; height: 16px; color: var(--emerald-400-70); }
+
+    /* Result content */
+    .result-content { flex: 1; min-width: 0; }
+    .result-url-line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.375rem;
+    }
+    .result-domain { font-size: 0.75rem; color: var(--emerald-400-60); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .result-date { font-size: 0.75rem; color: var(--white-20); }
+    .result-sep { font-size: 0.75rem; color: var(--white-10); }
+    .result-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--white-90);
+      line-height: 1.4;
+      margin-bottom: 0.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: color 0.3s;
+    }
+    @media (min-width: 640px) { .result-title { font-size: 1rem; } }
+    .result-card:hover .result-title { color: var(--emerald-300); }
+    .result-snippet {
+      font-size: 0.875rem;
+      color: var(--white-40);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: color 0.3s;
+    }
+    .result-card:hover .result-snippet { color: var(--white-50); }
+    .result-link-line {
+      margin-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--white-15);
+      transition: color 0.3s;
+    }
+    .result-card:hover .result-link-line { color: var(--white-25); }
+    .result-link-line svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .result-link-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ===== LOADING STATE ===== */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 0;
+    }
+    .loading-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, var(--emerald-400), var(--emerald-600));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .loading-icon svg { width: 32px; height: 32px; color: white; }
+    .loading-spinner {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--emerald-400);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .loading-spinner svg { width: 20px; height: 20px; animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .loading-bar {
+      margin-top: 1rem;
+      width: 192px;
+      height: 4px;
+      background: var(--white-5);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--emerald-500), var(--emerald-300));
+      border-radius: 9999px;
+      animation: progress 2s ease-out forwards;
+    }
+    @keyframes progress { from { width: 0%; } to { width: 90%; } }
+
+    /* ===== ERROR / EMPTY STATE ===== */
+    .state-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8rem 0;
+    }
+    .state-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .state-icon.error { background: var(--red-500-10); }
+    .state-icon.empty { background: var(--white-5); }
+    .state-icon svg { width: 32px; height: 32px; }
+    .state-icon.error svg { color: var(--red-400); }
+    .state-icon.empty svg { color: var(--white-20); }
+    .state-title { color: var(--white-60); font-size: 1.125rem; margin-bottom: 0.5rem; }
+    .state-text { color: var(--white-30); font-size: 0.875rem; text-align: center; max-width: 28rem; }
+    .state-btn {
+      margin-top: 1rem;
+      padding: 0.625rem 1.5rem;
+      background: var(--emerald-500);
+      border: none;
+      border-radius: 0.75rem;
+      color: black;
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .state-btn:hover { background: var(--emerald-400); }
+
+    /* ===== REFINE SEARCH ===== */
+    .refine-search {
+      margin: 3rem 0 2rem;
+      text-align: center;
+    }
+    .refine-text { color: var(--white-20); font-size: 0.875rem; margin-bottom: 1rem; }
+    .refine-btn {
+      padding: 0.625rem 1.5rem;
+      background: var(--white-3);
+      border: 1px solid var(--white-6);
+      border-radius: 0.75rem;
+      color: var(--white-40);
+      font-size: 0.875rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+    .refine-btn:hover {
+      color: var(--emerald-300);
+      border-color: var(--emerald-500-30);
+      background: var(--emerald-500-5);
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      padding: 1.5rem 0;
+      text-align: center;
+      color: var(--white-15);
+      font-size: 0.75rem;
+      position: relative;
+      z-index: 10;
+    }
+    .footer.hidden { display: none; }
+
+    /* ===== UTILITIES ===== */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Background Glows -->
+  <div class="bg-glow">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+    <div class="orb-3" id="bgOrb3"></div>
+  </div>
+
+  <!-- ===== HOMEPAGE ===== -->
+  <div class="homepage" id="homepage">
+    <!-- Logo -->
+    <div class="logo-container">
+      <div class="logo-wrapper">
+        <div class="logo-icon">
+          <div class="logo-glow"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <h1 class="logo-title">Hulya</h1>
+      <p class="logo-subtitle">Search the web, beautifully.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container" id="homeSearchContainer">
+      <div class="search-wrapper">
+        <div class="search-glow"></div>
+        <form id="homeForm">
+          <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input
+              type="text"
+              class="search-input"
+              id="homeInput"
+              placeholder="Search anything..."
+              autocomplete="off"
+            />
+            <button type="button" class="search-clear" id="homeClear">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <button type="submit" class="search-submit">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="suggestions" id="homeSuggestions"></div>
+    </div>
+
+    <!-- Quick Search Chips -->
+    <div class="quick-searches">
+      <button class="chip" data-query="trending news today 2026">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Trending
+      </button>
+      <button class="chip" data-query="latest AI technology 2026">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        AI
+      </button>
+      <button class="chip" data-query="world news today">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        World
+      </button>
+      <button class="chip" data-query="new technology releases 2026">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Tech
+      </button>
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+      <div class="feature">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Privacy First
+      </div>
+      <div class="feature">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Lightning Fast
+      </div>
+      <div class="feature">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Clean Results
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER (Results Page) ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <button class="header-logo" id="goHome">
+        <div class="logo-box">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <span class="header-logo-text">Hulya</span>
+      </button>
+
+      <div class="header-search">
+        <form id="headerForm">
+          <div class="search-bar-compact">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="headerInput" placeholder="Search with Hulya..." autocomplete="off" />
+            <button type="button" class="search-clear" id="headerClear">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <button type="submit" class="search-submit">Search</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="header-features">
+        <div class="header-feature">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Private
+        </div>
+        <div class="header-feature">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Fast
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== RESULTS PAGE ===== -->
+  <main class="results-page" id="resultsPage">
+    <!-- Loading -->
+    <div class="loading-state hidden" id="loadingState">
+      <div class="loading-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="loading-spinner">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        <span>Searching the web...</span>
+      </div>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+
+    <!-- Error -->
+    <div class="state-container hidden" id="errorState">
+      <div class="state-icon error">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </div>
+      <p class="state-title">Something went wrong</p>
+      <p class="state-text" id="errorText">Failed to fetch results. Please try again.</p>
+      <button class="state-btn" id="retryBtn">Try Again</button>
+    </div>
+
+    <!-- No Results -->
+    <div class="state-container hidden" id="emptyState">
+      <div class="state-icon empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <p class="state-title">No results found</p>
+      <p class="state-text">Try different keywords or check your spelling</p>
+      <button class="state-btn" id="newSearchBtn">New Search</button>
+    </div>
+
+    <!-- Results -->
+    <div class="hidden" id="resultsContent">
+      <div class="results-meta" id="resultsMeta"></div>
+      <div id="resultsList"></div>
+      <div class="refine-search">
+        <p class="refine-text">Not what you're looking for?</p>
+        <button class="refine-btn" id="refineBtn">Refine your search</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <p>Hulya Search &copy; 2026 &middot; Built with modern web technology</p>
+  </footer>
+
+  <script>
+    // ===== DOM Elements =====
+    const $ = (sel) => document.querySelector(sel);
+    const homepage = $('#homepage');
+    const header = $('#header');
+    const resultsPage = $('#resultsPage');
+    const footer = $('#footer');
+    const bgOrb3 = $('#bgOrb3');
+    const loadingState = $('#loadingState');
+    const errorState = $('#errorState');
+    const emptyState = $('#emptyState');
+    const resultsContent = $('#resultsContent');
+    const resultsMeta = $('#resultsMeta');
+    const resultsList = $('#resultsList');
+
+    const homeInput = $('#homeInput');
+    const homeClear = $('#homeClear');
+    const homeForm = $('#homeForm');
+    const homeSuggestions = $('#homeSuggestions');
+
+    const headerInput = $('#headerInput');
+    const headerClear = $('#headerClear');
+    const headerForm = $('#headerForm');
+
+    let currentQuery = '';
+    let isSearching = false;
+
+    // ===== Show/Hide Helpers =====
+    function show(el) { el.classList.remove('hidden'); }
+    function hide(el) { el.classList.add('hidden'); }
+
+    // ===== State Management =====
+    function showHomepage() {
+      show(homepage);
+      hide(header);
+      hide(resultsPage);
+      show(footer);
+      hide(bgOrb3);
+      homeInput.value = '';
+      homeClear.classList.remove('visible');
+      homeInput.focus();
+    }
+
+    function showResultsPage() {
+      hide(homepage);
+      hide(footer);
+      show(header);
+      show(resultsPage);
+      show(bgOrb3);
+    }
+
+    // ===== Search =====
+    async function performSearch(query) {
+      if (!query || !query.trim() || isSearching) return;
+      currentQuery = query.trim();
+      isSearching = true;
+
+      showResultsPage();
+      show(loadingState);
+      hide(errorState);
+      hide(emptyState);
+      hide(resultsContent);
+
+      headerInput.value = currentQuery;
+      headerClear.classList.add('visible');
+
+      const startTime = Date.now();
+
+      try {
+        const res = await fetch('/api/search?q=' + encodeURIComponent(currentQuery));
+        if (!res.ok) throw new Error('Search request failed');
+        const data = await res.json();
+        const results = data.results || [];
+        const searchTime = ((Date.now() - startTime) / 1000).toFixed(2);
+
+        hide(loadingState);
+
+        if (results.length === 0) {
+          show(emptyState);
+        } else {
+          show(resultsContent);
+          resultsMeta.innerHTML = `
+            <span>About ${results.length} results</span>
+            <span class="dot">|</span>
+            <span style="display:flex;align-items:center;gap:4px">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ${searchTime}s
+            </span>
+          `;
+          resultsList.innerHTML = results.map((r, i) => renderResultCard(r, i)).join('');
+        }
+      } catch (err) {
+        hide(loadingState);
+        show(errorState);
+        console.error('Search error:', err);
+      } finally {
+        isSearching = false;
+      }
+    }
+
+    function renderResultCard(result, index) {
+      const domain = getDomain(result.url);
+      const dateStr = result.date ? formatDate(result.date) : '';
+      const faviconUrl = getFaviconUrl(result.url);
+
+      return `
+        <a href="${escapeHtml(result.url)}" target="_blank" rel="noopener noreferrer"
+           class="result-card" style="animation-delay: ${index * 0.05}s">
+          <div class="result-inner">
+            <div class="favicon-box">
+              <img src="${escapeHtml(faviconUrl)}" alt=""
+                   onerror="this.style.display='none';this.parentElement.innerHTML='<span class=fallback>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />
+            </div>
+            <div class="result-content">
+              <div class="result-url-line">
+                <span class="result-domain">${escapeHtml(domain)}</span>
+                ${dateStr ? `<span class="result-sep">&middot;</span><span class="result-date">${escapeHtml(dateStr)}</span>` : ''}
+              </div>
+              <h3 class="result-title">${escapeHtml(result.name)}</h3>
+              <p class="result-snippet">${escapeHtml(result.snippet)}</p>
+              <div class="result-link-line">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <span class="result-link-url">${escapeHtml(result.url)}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    // ===== Utility Functions =====
+    function getDomain(url) {
+      try { return new URL(url).hostname.replace('www.', ''); }
+      catch { return url; }
+    }
+
+    function getFaviconUrl(url) {
+      try { return 'https://www.google.com/s2/favicons?domain=' + new URL(url).hostname + '&sz=32'; }
+      catch { return ''; }
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays < 7) return diffDays + ' days ago';
+        if (diffDays < 30) return Math.floor(diffDays / 7) + ' weeks ago';
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch { return dateStr; }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ===== Suggestions =====
+    function updateSuggestions(query) {
+      if (query.length <= 1) {
+        hide(homeSuggestions);
+        homeSuggestions.innerHTML = '';
+        return;
+      }
+      const bases = ['meaning', 'vs', 'tutorial', 'examples', 'latest news', 'how to', 'review', 'explained'];
+      const items = bases.slice(0, 6).map(b => `${query} ${b}`);
+      homeSuggestions.innerHTML = items.map(s => `
+        <button type="button" class="suggestion-item" data-query="${escapeHtml(s)}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>${escapeHtml(s)}</span>
+        </button>
+      `).join('');
+      show(homeSuggestions);
+
+      // Attach click handlers
+      homeSuggestions.querySelectorAll('.suggestion-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const q = btn.dataset.query;
+          homeInput.value = q;
+          hide(homeSuggestions);
+          performSearch(q);
+        });
+      });
+    }
+
+    // ===== Event Listeners =====
+
+    // Home form
+    homeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hide(homeSuggestions);
+      performSearch(homeInput.value);
+    });
+
+    homeInput.addEventListener('input', () => {
+      homeClear.classList.toggle('visible', homeInput.value.length > 0);
+      updateSuggestions(homeInput.value);
+    });
+
+    homeInput.addEventListener('focus', () => {
+      if (homeInput.value.length > 1) updateSuggestions(homeInput.value);
+    });
+
+    homeClear.addEventListener('click', () => {
+      homeInput.value = '';
+      homeClear.classList.remove('visible');
+      hide(homeSuggestions);
+      homeInput.focus();
+    });
+
+    // Close suggestions on click outside
+    document.addEventListener('click', (e) => {
+      if (!$('#homeSearchContainer').contains(e.target)) {
+        hide(homeSuggestions);
+      }
+    });
+
+    // Header form
+    headerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      performSearch(headerInput.value);
+    });
+
+    headerInput.addEventListener('input', () => {
+      headerClear.classList.toggle('visible', headerInput.value.length > 0);
+    });
+
+    headerClear.addEventListener('click', () => {
+      headerInput.value = '';
+      headerClear.classList.remove('visible');
+      headerInput.focus();
+    });
+
+    // Go home
+    $('#goHome').addEventListener('click', showHomepage);
+
+    // Quick search chips
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const q = chip.dataset.query;
+        homeInput.value = q;
+        performSearch(q);
+      });
+    });
+
+    // Retry button
+    $('#retryBtn').addEventListener('click', () => performSearch(currentQuery));
+
+    // New search button
+    $('#newSearchBtn').addEventListener('click', showHomepage);
+
+    // Refine button
+    $('#refineBtn').addEventListener('click', () => {
+      headerInput.focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Auto-focus home input
+    homeInput.focus();
+  </script>
+</body>
+</html>
